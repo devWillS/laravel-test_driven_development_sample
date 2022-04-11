@@ -4,6 +4,8 @@ namespace Tests\Feature;
 
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Testing\Fluent\AssertableJson;
 use phpDocumentor\Reflection\Types\This;
 use Tests\TestCase;
 
@@ -160,5 +162,23 @@ class ReportTest extends TestCase
         $params = ['name' => ''];
         $response = $this->postJson('api/customers', $params);
         $response->assertStatus(\Illuminate\Http\Response::HTTP_UNPROCESSABLE_ENTITY);
+    }
+
+    /**
+     * @test
+     */
+    public function POST_api_customersのエラーレスポンスの確認()
+    {
+        $params = ['name' => ''];
+        $response = $this->postJson('api/customers', $params);
+        $error_response = [
+            'message' => 'name は必須項目です',
+            'errors' => [
+                'name' => [
+                    'name は必須項目です'
+                ],
+            ]
+        ];
+        $response->assertExactJson($error_response);
     }
 }
